@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import redirect_stdout
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -64,6 +66,93 @@ class GeneratorTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertTrue((destination / "PROJECT" / "PROJECT_BRIEF.md").exists())
             self.assertTrue((destination / "TASKS" / "BACKLOG" / "001-project-kickoff-and-foundation.md").exists())
+
+    def test_task_flow_commands_move_tasks_between_stages(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            destination = Path(temp_dir) / "flow-workspace"
+            exit_code = main(
+                [
+                    "kickoff",
+                    "--project-name",
+                    "Flow Project",
+                    "--idea",
+                    "Manage an agent delivery flow from brief to task execution.",
+                    "--output",
+                    "A workspace with controllable task stages.",
+                    "--destination",
+                    str(destination),
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+
+            exit_code = main(
+                [
+                    "plan",
+                    "--workspace",
+                    str(destination),
+                    "--title",
+                    "Define execution slice",
+                    "--request",
+                    "Create the next implementable slice for the project.",
+                    "--priority",
+                    "high",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertTrue((destination / "TASKS" / "BACKLOG" / "002-define-execution-slice.md").exists())
+
+            exit_code = main(["continue", "--workspace", str(destination)])
+            self.assertEqual(exit_code, 0)
+            self.assertTrue((destination / "TASKS" / "ACTIVE" / "001-project-kickoff-and-foundation.md").exists())
+
+            exit_code = main(
+                [
+                    "block",
+                    "--workspace",
+                    str(destination),
+                    "--reason",
+                    "Waiting for approval.",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertTrue((destination / "TASKS" / "BLOCKED" / "001-project-kickoff-and-foundation.md").exists())
+
+            exit_code = main(
+                [
+                    "continue",
+                    "--workspace",
+                    str(destination),
+                    "--from",
+                    "blocked",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertTrue((destination / "TASKS" / "ACTIVE" / "001-project-kickoff-and-foundation.md").exists())
+
+            exit_code = main(
+                [
+                    "complete",
+                    "--workspace",
+                    str(destination),
+                    "--note",
+                    "Ready for the next task.",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            self.assertTrue((destination / "TASKS" / "DONE" / "001-project-kickoff-and-foundation.md").exists())
+
+            state = json.loads((destination / "STATE" / "run_state.json").read_text(encoding="utf-8"))
+            self.assertEqual(state["completed_count"], 1)
+            self.assertEqual(state["backlog_count"], 1)
+            self.assertEqual(state["active_task"], None)
+
+            buffer = io.StringIO()
+            with redirect_stdout(buffer):
+                exit_code = main(["status", "--workspace", str(destination)])
+            self.assertEqual(exit_code, 0)
+            output = buffer.getvalue()
+            self.assertIn("Project: Flow Project", output)
+            self.assertIn("Tasks: backlog=1 active=0 blocked=0 done=1", output)
 
 
 if __name__ == "__main__":

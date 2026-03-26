@@ -60,6 +60,44 @@ python -m agent_builder_template kickoff
 
 `create` remains available as a compatibility alias, but `kickoff` is the primary command.
 
+## Core commands
+
+Kick off a new workspace:
+
+```bash
+agent-builder kickoff
+```
+
+Add a new planned task to the backlog:
+
+```bash
+agent-builder plan --workspace ./my-project --title "Define first execution slice" --request "Turn the kickoff artifacts into the next implementable task."
+```
+
+Move the next task into active work:
+
+```bash
+agent-builder continue --workspace ./my-project
+```
+
+Block the active task:
+
+```bash
+agent-builder block --workspace ./my-project --reason "Waiting for architecture approval."
+```
+
+Complete the active task:
+
+```bash
+agent-builder complete --workspace ./my-project --note "Ready for the next delivery slice."
+```
+
+Inspect workspace state:
+
+```bash
+agent-builder status --workspace ./my-project
+```
+
 ## What gets generated
 
 The generated workspace includes:
@@ -84,4 +122,4 @@ The user should mainly refine the brief and approve meaningful decisions. The ag
 
 ## Current scope
 
-This version focuses on kickoff and workspace generation. It does not yet execute external LLM provider calls automatically. It prepares the project so an agent workflow can start with clear structure, quality expectations, and delivery state.
+This version focuses on kickoff, task orchestration, and workspace state management. It does not yet execute external LLM provider calls automatically. It prepares the project so an agent workflow can start with clear structure, quality expectations, delivery state, and task movement between `BACKLOG`, `ACTIVE`, `BLOCKED`, and `DONE`.
