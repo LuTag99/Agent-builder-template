@@ -98,6 +98,12 @@ Inspect workspace state:
 agent-builder status --workspace ./my-project
 ```
 
+Generate context questions and gaps for the agent:
+
+```bash
+agent-builder clarify --workspace ./my-project
+```
+
 ## What gets generated
 
 The generated workspace includes:
@@ -112,6 +118,8 @@ The generated workspace includes:
 - `STATE/NEXT_ACTION.md`
 - `AGENTS/` plus system guidance in `SYSTEM/`
 
+The `clarify` command also creates `PROJECT/CONTEXT_GAPS.md` to help agents fill missing context without over-inventing details.
+
 ## Delivery model
 
 The generated workspace is built around this flow:
@@ -122,4 +130,4 @@ The user should mainly refine the brief and approve meaningful decisions. The ag
 
 ## Current scope
 
-This version focuses on kickoff, task orchestration, and workspace state management. It does not yet execute external LLM provider calls automatically. It prepares the project so an agent workflow can start with clear structure, quality expectations, delivery state, and task movement between `BACKLOG`, `ACTIVE`, `BLOCKED`, and `DONE`.
+This version focuses on kickoff, context clarification, task orchestration, and workspace state management. It does not yet execute external LLM provider calls automatically. It prepares the project so an agent workflow can start with clear structure, quality expectations, delivery state, context guidance, and task movement between `BACKLOG`, `ACTIVE`, `BLOCKED`, and `DONE`.

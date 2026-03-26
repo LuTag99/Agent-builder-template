@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-builder-template"
-version = "0.2.0"
+version = "0.3.0"
 description = "Generate an agent-ready project workspace from a short project brief."
 readme = "README.md"
 requires-python = ">=3.10"

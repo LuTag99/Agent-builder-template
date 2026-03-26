@@ -19,6 +19,7 @@ The template separates:
 Review these files first:
 
 - `PROJECT/zz - PROJECT_BRIEF.md`
+- `SYSTEM/CONTEXT_CAPTURE_GUIDE.md`
 - `SYSTEM/QUALITY_BAR.md`
 - `SYSTEM/APPROVAL_GATES.md`
 - `AGENTS.md`

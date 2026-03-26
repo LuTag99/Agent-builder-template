@@ -154,6 +154,37 @@ class GeneratorTests(unittest.TestCase):
             self.assertIn("Project: Flow Project", output)
             self.assertIn("Tasks: backlog=1 active=0 blocked=0 done=1", output)
 
+    def test_clarify_creates_context_gaps_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            destination = Path(temp_dir) / "clarify-workspace"
+            exit_code = main(
+                [
+                    "kickoff",
+                    "--project-name",
+                    "Clarify Project",
+                    "--idea",
+                    "Create a workspace that can surface missing context.",
+                    "--output",
+                    "A project OS with guided context clarification.",
+                    "--destination",
+                    str(destination),
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+
+            exit_code = main(["clarify", "--workspace", str(destination)])
+            self.assertEqual(exit_code, 0)
+
+            gap_file = destination / "PROJECT" / "CONTEXT_GAPS.md"
+            self.assertTrue(gap_file.exists())
+            content = gap_file.read_text(encoding="utf-8")
+            self.assertIn("## Critical Gaps To Resolve", content)
+            self.assertIn("Users and approvers are still unclear", content)
+
+            state = json.loads((destination / "STATE" / "run_state.json").read_text(encoding="utf-8"))
+            self.assertEqual(state["current_status"], "context_clarification_needed")
+            self.assertTrue(state["open_issues"])
+
 
 if __name__ == "__main__":
     unittest.main()

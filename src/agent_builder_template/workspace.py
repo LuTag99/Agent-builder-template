@@ -9,6 +9,15 @@ from .generator import slugify
 
 
 TASK_STAGES = ("BACKLOG", "ACTIVE", "BLOCKED", "DONE")
+PLACEHOLDER_PATTERNS = (
+    "to be defined",
+    "not specified",
+    "open for decision",
+    "to be decided",
+    "unknown",
+    "pending decision",
+    "still need",
+)
 
 
 def locate_workspace(path: str | Path | None = None) -> Path:
@@ -71,6 +80,8 @@ def refresh_state(state: dict, workspace_root: Path) -> dict:
     refreshed["blocked_count"] = len(blocked)
     refreshed["completed_count"] = len(done)
     refreshed["active_task"] = active[0].name if active else None
+    open_issues = refreshed.get("open_issues") or []
+    clarification_needed = any("critical context gaps" in issue.lower() for issue in open_issues)
 
     if active:
         refreshed["current_phase"] = "execution"
@@ -78,6 +89,9 @@ def refresh_state(state: dict, workspace_root: Path) -> dict:
     elif blocked:
         refreshed["current_phase"] = "blocked"
         refreshed["current_status"] = "blocked"
+    elif clarification_needed:
+        refreshed["current_phase"] = "planning"
+        refreshed["current_status"] = "context_clarification_needed"
     elif backlog:
         refreshed["current_phase"] = "planning"
         refreshed["current_status"] = "ready_for_next_task"
@@ -276,11 +290,131 @@ def render_status(workspace_root: Path) -> str:
     if next_action:
         lines.append(f"Next action: {next_action}")
 
+    open_issues = state.get("open_issues") or []
+    if open_issues:
+        lines.append(f"Open issues: {len(open_issues)}")
+
     pending_approvals = state.get("approval_gates_pending") or []
     if pending_approvals:
         lines.append(f"Approval gates pending: {len(pending_approvals)}")
 
     return "\n".join(lines)
+
+
+def clarify_context(workspace_root: Path) -> Path:
+    brief_text = (workspace_root / "PROJECT" / "PROJECT_BRIEF.md").read_text(encoding="utf-8")
+    context_text = (workspace_root / "PROJECT" / "PROJECT_CONTEXT.md").read_text(encoding="utf-8")
+    architecture_text = (workspace_root / "PROJECT" / "ARCHITECTURE.md").read_text(encoding="utf-8")
+
+    brief_sections = _parse_sections(brief_text)
+    context_sections = _parse_sections(context_text)
+    architecture_sections = _parse_sections(architecture_text)
+
+    known = [
+        ("Project name", _first_meaningful_line(brief_sections.get("Project Name", ""))),
+        ("Core idea", _first_meaningful_line(brief_sections.get("Core Idea", ""))),
+        ("Intended output", _first_meaningful_line(brief_sections.get("Intended Output", ""))),
+    ]
+
+    critical_gaps: list[dict[str, str]] = []
+    helpful_gaps: list[dict[str, str]] = []
+
+    _collect_gap(
+        critical_gaps,
+        title="Users and approvers are still unclear",
+        current_signal=_section_excerpt(
+            brief_sections.get("Intended Users Or Stakeholders", "")
+            + "\n"
+            + context_sections.get("Intended Users Or Stakeholders", "")
+        ),
+        question="Who uses this first, who signs off on architecture or scope decisions, and who is affected by mistakes?",
+        why="Without clear users and approvers, prioritization and approval gates stay weak.",
+    )
+    _collect_gap(
+        critical_gaps,
+        title="Constraints are not specific enough yet",
+        current_signal=_section_excerpt(brief_sections.get("Constraints", "")),
+        question="What constraints are real and non-negotiable across time, budget, policy, operations, or delivery?",
+        why="Weak constraints lead to plans that look clean but are not actually executable.",
+    )
+    _collect_gap(
+        critical_gaps,
+        title="Success measures need to be sharper",
+        current_signal=_section_excerpt(brief_sections.get("Success Measures", "")),
+        question="What concrete signals would tell you the project is successful enough for the next checkpoint?",
+        why="Without success measures, the team can ship activity instead of outcome.",
+    )
+    _collect_gap(
+        critical_gaps,
+        title="Stack direction is still open",
+        current_signal=_section_excerpt(
+            brief_sections.get("Preferred Stack Or Direction", "")
+            + "\n"
+            + context_sections.get("Tech Stack", "")
+        ),
+        question="Is there a preferred stack, language, framework, runtime, or hosting direction that should constrain early decisions?",
+        why="The first implementation slice gets more expensive if the stack direction changes late.",
+    )
+    _collect_gap(
+        helpful_gaps,
+        title="Architecture boundaries are still generic",
+        current_signal=_section_excerpt(
+            architecture_sections.get("Open Decisions", "")
+            + "\n"
+            + context_sections.get("Architecture Notes", "")
+        ),
+        question="What are the first major components, boundaries, or integration points that matter for delivery?",
+        why="Clear boundaries reduce rework and make task slicing cleaner.",
+    )
+    _collect_gap(
+        helpful_gaps,
+        title="Known risks can be made more concrete",
+        current_signal=_section_excerpt(context_sections.get("Known Risks", "")),
+        question="Which technical, delivery, or dependency risks are genuinely likely in the next slice of work?",
+        why="Sharper risks improve planning and validation depth.",
+    )
+    _collect_gap(
+        helpful_gaps,
+        title="Out-of-scope boundaries may need sharpening",
+        current_signal=_section_excerpt(context_sections.get("Out Of Scope", "")),
+        question="What tempting work should be explicitly excluded from the first delivery window?",
+        why="Strong out-of-scope boundaries protect focus.",
+    )
+
+    gap_path = workspace_root / "PROJECT" / "CONTEXT_GAPS.md"
+    gap_path.write_text(
+        _build_context_gaps_report(
+            known=known,
+            critical_gaps=critical_gaps,
+            helpful_gaps=helpful_gaps,
+        ),
+        encoding="utf-8",
+    )
+
+    state = sync_state(workspace_root)
+    state["last_run_id"] = _run_id("clarify")
+    state["open_issues"] = (
+        [f"{len(critical_gaps)} critical context gaps remain."] if critical_gaps else []
+    )
+    if critical_gaps and not state.get("active_task"):
+        state["current_status"] = "context_clarification_needed"
+        state["current_phase"] = "planning"
+        _write_next_action(
+            workspace_root,
+            step="Review `PROJECT/CONTEXT_GAPS.md` and answer the highest-priority context questions before deep implementation work.",
+            owner="User, supported by Intake and Planner.",
+            why="The workspace now has a focused list of context gaps that should be reduced before the next major delivery step.",
+        )
+    elif not critical_gaps and not state.get("active_task"):
+        _write_next_action(
+            workspace_root,
+            step="Context is sufficient for the next planning step. Move the next backlog task into active work when ready.",
+            owner="Planner.",
+            why="No critical context gaps were detected in the current brief and context files.",
+        )
+
+    write_state(workspace_root, state)
+    return gap_path
 
 
 def _get_active_task(workspace_root: Path, task_ref: str | None) -> Path:
@@ -414,3 +548,126 @@ def _run_id(prefix: str) -> str:
 
 def _timestamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def _parse_sections(text: str) -> dict[str, str]:
+    sections: dict[str, list[str]] = {}
+    current: str | None = None
+
+    for raw_line in text.splitlines():
+        line = raw_line.rstrip()
+        if line.startswith("## "):
+            current = line[3:].strip()
+            sections[current] = []
+            continue
+        if current is not None:
+            sections[current].append(line)
+
+    return {heading: "\n".join(lines).strip() for heading, lines in sections.items()}
+
+
+def _first_meaningful_line(text: str) -> str:
+    for raw_line in text.splitlines():
+        line = raw_line.strip().lstrip("-").strip()
+        if line:
+            return _shorten(line, 140)
+    return "Not captured yet."
+
+
+def _section_excerpt(text: str) -> str:
+    cleaned = " ".join(line.strip() for line in text.splitlines() if line.strip())
+    return _shorten(cleaned or "No current signal captured.", 200)
+
+
+def _collect_gap(
+    bucket: list[dict[str, str]],
+    *,
+    title: str,
+    current_signal: str,
+    question: str,
+    why: str,
+) -> None:
+    if _contains_gap_signal(current_signal):
+        bucket.append(
+            {
+                "title": title,
+                "current_signal": current_signal,
+                "question": question,
+                "why": why,
+            }
+        )
+
+
+def _contains_gap_signal(text: str) -> bool:
+    normalized = text.lower()
+    return not normalized.strip() or any(pattern in normalized for pattern in PLACEHOLDER_PATTERNS)
+
+
+def _build_context_gaps_report(
+    *,
+    known: list[tuple[str, str]],
+    critical_gaps: list[dict[str, str]],
+    helpful_gaps: list[dict[str, str]],
+) -> str:
+    lines = [
+        "# Context Gaps",
+        "",
+        "This file helps the agent fill context without inventing unnecessary detail. It highlights what already looks clear, what still blocks confident planning, and what can be clarified later.",
+        "",
+        "## What Already Looks Clear",
+        "",
+    ]
+
+    for label, value in known:
+        lines.append(f"- {label}: {value}")
+
+    lines.extend(["", "## Critical Gaps To Resolve", ""])
+    if critical_gaps:
+        for gap in critical_gaps:
+            lines.extend(
+                [
+                    f"### {gap['title']}",
+                    "",
+                    f"- Current signal: {gap['current_signal']}",
+                    f"- Why it matters: {gap['why']}",
+                    f"- Question to answer: {gap['question']}",
+                    "",
+                ]
+            )
+    else:
+        lines.extend(["No critical context gaps were detected from the current brief and context files.", ""])
+
+    lines.extend(["## Helpful Clarifications", ""])
+    if helpful_gaps:
+        for gap in helpful_gaps:
+            lines.extend(
+                [
+                    f"### {gap['title']}",
+                    "",
+                    f"- Current signal: {gap['current_signal']}",
+                    f"- Why it matters: {gap['why']}",
+                    f"- Question to answer: {gap['question']}",
+                    "",
+                ]
+            )
+    else:
+        lines.extend(["No additional clarification candidates were detected right now.", ""])
+
+    lines.extend(
+        [
+            "## Safe Short-Term Rule",
+            "",
+            "Fill context to the level needed for the next delivery slice. Record facts, mark assumptions clearly, and escalate approval-sensitive decisions instead of guessing.",
+            "",
+            "## Recommended Next Step",
+            "",
+            "Answer the critical questions first, update `PROJECT/PROJECT_BRIEF.md` and `PROJECT/PROJECT_CONTEXT.md`, then run `agent-builder clarify` again if the context is still shifting.",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _shorten(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+    return text[: limit - 3].rstrip() + "..."

@@ -7,6 +7,7 @@ import sys
 from .generator import ProjectSpec, generate_workspace, slugify
 from .workspace import (
     block_active_task,
+    clarify_context,
     complete_active_task,
     continue_task,
     locate_workspace,
@@ -86,6 +87,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _configure_workspace_argument(status)
 
+    clarify = subparsers.add_parser(
+        "clarify",
+        help="Generate guided context gaps and questions for the current workspace.",
+    )
+    _configure_workspace_argument(clarify)
+
     return parser
 
 
@@ -147,6 +154,8 @@ def main(argv: list[str] | None = None) -> int:
         return _handle_complete(args, parser)
     if args.command == "status":
         return _handle_status(args, parser)
+    if args.command == "clarify":
+        return _handle_clarify(args, parser)
 
     parser.error(f"Unsupported command: {args.command}")
     return 2
@@ -271,6 +280,14 @@ def _handle_complete(args: argparse.Namespace, parser: argparse.ArgumentParser) 
 def _handle_status(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     workspace_root = _resolve_workspace(args.workspace, parser)
     print(render_status(workspace_root))
+    return 0
+
+
+def _handle_clarify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    workspace_root = _resolve_workspace(args.workspace, parser)
+    gap_path = clarify_context(workspace_root)
+    print(f"Updated context gaps: {gap_path.relative_to(workspace_root)}")
+    print("Review PROJECT/CONTEXT_GAPS.md and update the brief or context before the next major delivery step.")
     return 0
 
 
