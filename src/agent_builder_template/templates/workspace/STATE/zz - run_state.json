@@ -1,0 +1,10 @@
+{
+  "project_name": "Example Project",
+  "last_run_id": "run-2026-03-26-001",
+  "current_status": "idle",
+  "open_issues": [],
+  "known_risks": [
+    "Requirements may evolve as project context becomes more complete."
+  ],
+  "last_updated": "2026-03-26T09:00:00Z"
+}
