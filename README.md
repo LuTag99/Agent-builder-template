@@ -1,26 +1,28 @@
 # Agent Builder Template
 
-`agent-builder-template` is a small CLI that turns a short project brief into an agent-ready project workspace.
+`agent-builder-template` is a CLI for kicking off an agent-operated delivery workspace from a short project brief.
 
-You describe:
+You provide:
 
 - the project name
 - the core idea
 - the intended output
-- optional constraints, stakeholders, and stack preferences
+- optional users, constraints, preferred stack, and no-go areas
 
-The tool then creates a working folder with:
+The tool creates the working system a senior delivery team would need:
 
-- a filled `PROJECT_CONTEXT.md`
-- an initial build task brief
-- a starter `run_state.json`
-- generic agent role definitions for planning, building, review, regression checks, reporting, and artifact handling
+- a filled `PROJECT_BRIEF.md`
+- derived project context, architecture, and delivery plan
+- an initial backlog task
+- run state and next-action tracking
+- agent role definitions
+- system-level quality and approval guidance
 
 ## Why this exists
 
-Starting an AI-assisted project usually breaks down in the same place: the idea is clear in your head, but the working structure around it is missing. This tool gives you a clean starting point without forcing a heavy process.
+AI-assisted project work usually stalls before delivery quality becomes the problem. The first failure is simpler: the idea exists, but the operating system around the work does not. This tool closes that gap.
 
-The result is not a finished application. It is a prepared project workspace that agents can use to plan, build, check, and report work in a consistent way.
+It turns a short brief into a structured workspace that supports planning, architecture, implementation, review, regression checking, reporting, and handoff.
 
 ## Install
 
@@ -33,46 +35,53 @@ pip install -e .
 Interactive:
 
 ```bash
-agent-builder create
+agent-builder kickoff
 ```
 
 Non-interactive:
 
 ```bash
-agent-builder create ^
+agent-builder kickoff ^
   --project-name "Agentic Landing Page Builder" ^
-  --idea "Create a reusable system that scaffolds landing page projects from a short brief." ^
-  --output "A project workspace with context, tasks, state tracking, and agent role definitions." ^
+  --idea "Create a reusable system that scaffolds project delivery from a short business brief." ^
+  --output "A working project workspace and initial delivery system that agents can continue from." ^
+  --users "Small product teams and solo founders" ^
   --tech-stack "Python CLI" ^
-  --constraints "Keep the first version simple and dependency-light."
+  --constraints "Keep the first version simple and dependency-light." ^
+  --no-gos "Do not add provider-specific coupling in the core design."
 ```
 
-PowerShell with the module directly from the repo:
+PowerShell directly from the repo:
 
 ```powershell
 $env:PYTHONPATH = "src"
-python -m agent_builder_template create
+python -m agent_builder_template kickoff
 ```
+
+`create` remains available as a compatibility alias, but `kickoff` is the primary command.
 
 ## What gets generated
 
 The generated workspace includes:
 
-- `README.md` with project-specific orientation
-- `AGENTS.md` and `AGENTS/` with generic role behavior
+- `PROJECT/PROJECT_BRIEF.md`
 - `PROJECT/PROJECT_CONTEXT.md`
-- `TASKS/INITIAL_BUILD_TASK.md`
+- `PROJECT/ARCHITECTURE.md`
+- `PROJECT/DELIVERY_PLAN.md`
+- `PROJECT/DECISIONS.md`
+- `TASKS/BACKLOG/001-project-kickoff-and-foundation.md`
 - `STATE/run_state.json`
-- `RUNS/` and `REPORTS/` for working outputs
+- `STATE/NEXT_ACTION.md`
+- `AGENTS/` plus system guidance in `SYSTEM/`
 
-## Typical flow
+## Delivery model
 
-1. Run `agent-builder create`.
-2. Review the generated project context.
-3. Start from `TASKS/INITIAL_BUILD_TASK.md`.
-4. Let your agents work through `Plan -> Build -> Check -> Report`.
-5. Keep `STATE/run_state.json` current as the project evolves.
+The generated workspace is built around this flow:
 
-## Scope of version 1
+`Brief -> Clarify -> Plan -> Architect -> Build -> Critic -> Regression -> Report -> Next Action`
 
-This first version focuses on project intake and workspace generation. It does not call an LLM provider directly or run agent steps automatically. It prepares the workspace so an agent-based workflow can start cleanly.
+The user should mainly refine the brief and approve meaningful decisions. The agents should handle the structured delivery work.
+
+## Current scope
+
+This version focuses on kickoff and workspace generation. It does not yet execute external LLM provider calls automatically. It prepares the project so an agent workflow can start with clear structure, quality expectations, and delivery state.

@@ -40,10 +40,15 @@ where = ["src"]
 agent_builder_template = [
   "templates/workspace/README.md",
   "templates/workspace/AGENTS.md",
+  "templates/workspace/SYSTEM/*.md",
   "templates/workspace/AGENTS/*.md",
   "templates/workspace/PROJECT/*",
   "templates/workspace/TASKS/*",
+  "templates/workspace/TASKS/BACKLOG/.gitkeep",
+  "templates/workspace/TASKS/ACTIVE/.gitkeep",
+  "templates/workspace/TASKS/BLOCKED/.gitkeep",
+  "templates/workspace/TASKS/DONE/.gitkeep",
   "templates/workspace/STATE/*",
   "templates/workspace/RUNS/.gitkeep",
-  "templates/workspace/REPORTS/.gitkeep"
+  "templates/workspace/REPORTS/*"
 ]

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Artifact Steward keeps the working system organized across runs. Its role is operational: preserve traceability, reduce confusion, and ensure that outputs, state, and handoff materials remain easy to find and understand.
+The Artifact Steward keeps the working system organized across runs. Its role is operational: preserve traceability, reduce confusion, and ensure that outputs, state, tasks, and handoff materials remain easy to find and understand.
 
 ## When To Use It
 
@@ -28,6 +28,7 @@ The Artifact Steward should work from:
 
 The Artifact Steward should maintain:
 
+- orderly task movement between `TASKS/BACKLOG`, `TASKS/ACTIVE`, `TASKS/BLOCKED`, and `TASKS/DONE`
 - orderly contents in `RUNS/`
 - clear outputs in `REPORTS/`
 - an accurate summary state in `STATE/`
@@ -43,5 +44,6 @@ The Artifact Steward should:
 - help preserve a usable record of what happened across iterations
 - prevent confusion between current work and older outputs
 - update shared state when the project status materially changes
+- keep the next action explicit so the workflow can resume quickly
 
 The role should stay simple. It is there to support continuity, not to create record-keeping overhead for its own sake.

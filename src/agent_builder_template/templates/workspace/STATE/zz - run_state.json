@@ -1,10 +1,19 @@
 {
   "project_name": "Example Project",
-  "last_run_id": "run-2026-03-26-001",
-  "current_status": "idle",
+  "last_run_id": "kickoff-2026-03-26-001",
+  "current_status": "kickoff_complete",
+  "current_phase": "kickoff",
+  "active_task": null,
+  "backlog_count": 1,
+  "blocked_count": 0,
+  "completed_count": 0,
   "open_issues": [],
   "known_risks": [
     "Requirements may evolve as project context becomes more complete."
+  ],
+  "approval_gates_pending": [
+    "final architecture confirmation",
+    "stack confirmation"
   ],
   "last_updated": "2026-03-26T09:00:00Z"
 }

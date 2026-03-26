@@ -1,43 +1,34 @@
-# DevAgent Template
+# Agent Delivery Workspace Template
 
-This template is a lightweight starting structure for AI-assisted development work. It gives a project a clear place to store stable context, define reusable agent roles, track run state, capture task briefs, and record outcomes without adding heavy process.
+This template is a lightweight operating system for agent-assisted software delivery. It is designed for a simple starting point: a user describes an idea, the intended result, and any important constraints, and the delivery system turns that brief into professional working structure.
 
-Its purpose is simple: reduce ambiguity. Instead of starting each new project from a blank folder or scattered notes, you get a small operating system for development work with a consistent flow:
+The template separates:
 
-`Request -> Plan -> Build -> Check -> Report`
+- what the project is trying to do
+- how agent roles should behave
+- what quality bar the work should meet
+- what tasks exist right now
+- what happened in the latest run
 
-Use this folder by copying it into a new project, then adjusting the few files that hold project-specific information. The agent role files are meant to stay mostly generic so they can be reused across many kinds of software work.
+## Core flow
+
+`Brief -> Clarify -> Plan -> Architect -> Build -> Critic -> Regression -> Report -> Next Action`
 
 ## Start here
 
-Customize these files first:
+Review these files first:
 
-- `PROJECT/zz - PROJECT_CONTEXT.md` for stable project facts, constraints, and quality expectations
-- `TASKS/zz - TASK_BRIEF_TEMPLATE.md` to create the first real task brief for the work at hand
-- `STATE/zz - run_state.json` to record the current working state of the project
+- `PROJECT/zz - PROJECT_BRIEF.md`
+- `SYSTEM/QUALITY_BAR.md`
+- `SYSTEM/APPROVAL_GATES.md`
+- `AGENTS.md`
 
-After that, review `AGENTS.md` and the files in `AGENTS/` so the team understands how the workflow is intended to operate.
+Then move from backlog to active work only when the brief, architecture direction, and first delivery slice are clear enough.
 
-## Basic use
+## Keep it useful
 
-For a new task:
-
-1. Capture the task briefly and clearly.
-2. Decide whether the task needs a quick pass or a fuller workflow.
-3. Plan only to the level the task needs.
-4. Make the smallest sound change that solves the problem.
-5. Check for obvious risks or regressions.
-6. Write a short report that helps the next person continue.
-
-Small tasks can move quickly. Larger or riskier tasks should use more of the system.
-
-## Keep it lightweight
-
-This template works best when it stays practical:
-
-- Record stable facts once instead of repeating them in every task.
-- Use short task briefs instead of long requirement documents.
-- Prefer targeted checks over ceremonial process.
-- Expand the workflow only when the task justifies it.
-
-If a file stops helping decisions or execution, simplify it. The goal is better work and clearer handoffs, not bureaucracy.
+- Keep the brief short and current.
+- Keep plans proportional to the risk.
+- Keep tasks small enough to review and test.
+- Record decisions that materially affect delivery.
+- Escalate approval-sensitive changes instead of hiding them in implementation.

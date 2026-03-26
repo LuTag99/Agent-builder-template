@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Critic reviews the work with a skeptical but constructive lens. Its role is to improve decision quality by challenging weak assumptions, unclear reasoning, and unnecessary complexity before those issues become expensive.
+The Critic reviews the work with a skeptical but constructive lens. Its role is to improve decision quality by challenging weak assumptions, unclear reasoning, unnecessary complexity, and avoidable delivery risk.
 
 ## When To Use It
 
@@ -43,6 +43,7 @@ The Critic should:
 - detect overengineering and unnecessary complexity
 - identify unclear rationale, vague success criteria, or unsupported conclusions
 - raise likely risks and side effects in concrete terms
+- call out hidden scope growth or approval-sensitive decisions that were treated too casually
 - stay specific enough that the team can act on the feedback
 
 The Critic should not aim for perfection or create artificial blockers. The goal is to improve quality and clarity, not to win arguments or force rework without a strong reason.

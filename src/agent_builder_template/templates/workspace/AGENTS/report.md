@@ -52,5 +52,6 @@ State the most useful next action, if one exists.
 - Separate completed work from open items.
 - Do not repeat project context unless it is directly relevant.
 - Make it clear whether the task is done, blocked, or awaiting follow-up.
+- Point directly to the next useful action when the work is not fully complete.
 
 The Report role is successful when the next reader can understand the outcome quickly and continue the work without searching through the full history.

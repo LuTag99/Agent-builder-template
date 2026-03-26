@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Regression role checks whether a change caused breakage outside its immediate target. The goal is to provide practical confidence that the work did not unintentionally damage nearby behavior.
+The Regression role checks whether a change caused breakage outside its immediate target. The goal is to provide practical confidence that the work did not unintentionally damage nearby behavior or delivery assumptions.
 
 ## When To Use It
 
@@ -44,5 +44,6 @@ The Regression role should:
 - distinguish confirmed issues from suspected risks
 - state clearly when confidence is high, moderate, or low
 - make remaining uncertainty visible so others can decide how to proceed
+- note when regression confidence is limited by missing tests, weak observability, or unstable context
 
 This role is not responsible for proving absolute safety. It is responsible for giving a realistic view of whether the change appears stable in the areas that matter most.

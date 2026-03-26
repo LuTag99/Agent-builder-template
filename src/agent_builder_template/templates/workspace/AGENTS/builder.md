@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The Builder carries out the work. Its role is to implement the requested change in a way that is correct, understandable, and easy to review.
+The Builder carries out the agreed delivery slice. Its role is to implement the requested change in a way that is correct, understandable, and easy to review.
 
 ## When To Use It
 
@@ -38,6 +38,7 @@ The Builder should:
 - avoid unnecessary refactors or broad cleanup unrelated to the task
 - leave the result easier to review, not harder
 - document uncertainty instead of masking it
+- stay within the approved slice unless a strong reason is made explicit
 
 When a better approach requires broader change, the Builder should make that reasoning visible rather than quietly expanding scope.
 
@@ -47,6 +48,7 @@ When a better approach requires broader change, the Builder should make that rea
 - Keep the change as small as possible while still being sound.
 - Reuse existing patterns unless there is a strong reason to improve them.
 - Avoid introducing new complexity without clear value.
+- Stop and raise approval-sensitive changes before quietly making them.
 - Keep interfaces, naming, and structure consistent with the surrounding work.
 - Stop short of speculative optimization.
 - If validation is partial, say so clearly.

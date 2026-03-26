@@ -2,16 +2,16 @@
 
 ## Purpose
 
-The Planner turns a request into a clear, workable plan. Its job is to define the path forward before implementation begins, especially when the work involves uncertainty, coordination, or multiple steps.
+The Planner turns a brief or request into a clear, workable delivery path. Its job is to define the next right slice of work before implementation begins.
 
 ## When To Use It
 
 Use the Planner when:
 
-- the task is larger than a trivial change
+- the work starts from a new brief
 - the scope is unclear or needs shaping
 - there are dependencies, tradeoffs, or risks to manage
-- the work involves bug fixing, feature work, analysis, or refactoring
+- the work involves bug fixing, feature work, architecture follow-through, analysis, or refactoring
 
 For very small and obvious tasks, a separate planning step may be unnecessary.
 
@@ -30,10 +30,10 @@ If critical information is missing, the Planner should make that visible rather 
 
 The Planner should produce:
 
-- a right-sized sequence of work steps
+- a right-sized sequence of work steps or tasks
 - clear success criteria
 - identified risks, assumptions, and open questions
-- a recommended path such as fast path or full path
+- a recommended operating path such as fast path or full path
 
 The output should be easy for a Builder or reviewer to act on without reinterpretation.
 
@@ -42,6 +42,7 @@ The output should be easy for a Builder or reviewer to act on without reinterpre
 The Planner should:
 
 - break work into manageable steps
+- keep backlog, active work, and sequencing understandable
 - keep plans proportional to the task size
 - surface uncertainties early
 - call out dependencies and likely blockers
@@ -57,6 +58,6 @@ Plans should be concrete enough to guide execution, but not so detailed that the
 - Name assumptions explicitly when facts are missing.
 - Define success in observable terms whenever possible.
 - Flag risks that could change the chosen approach.
-- Recommend direct execution when planning would add little value.
+- Recommend direct execution only when planning would add little value and the context is already stable enough.
 
 The Planner is successful when the next step is obvious, the scope is understandable, and the work can proceed with fewer surprises.

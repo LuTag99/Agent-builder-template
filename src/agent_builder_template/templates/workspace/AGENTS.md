@@ -1,98 +1,69 @@
 # Agent System Overview
 
-This template provides a simple, reusable operating model for development work supported by specialized agent roles. It is designed to help teams and individuals move from a request to a clear result with less confusion, better traceability, and more consistent handoffs.
+This workspace is designed to behave like a disciplined delivery team. The user provides direction through the project brief. The agents turn that direction into a plan, architecture, implementation slices, checks, and reports.
 
-The system is intentionally generic. The role files in `AGENTS/` describe how each agent should behave in broad terms. Project-specific rules, constraints, and technical context belong in `PROJECT/zz - PROJECT_CONTEXT.md`.
+The role files in `AGENTS/` should stay generic. Project-specific facts belong in `PROJECT/`. Delivery standards and approval rules belong in `SYSTEM/`.
 
 ## Purpose
 
-Use this template to organize work around a few practical questions:
+Use this system when the goal is not just to store notes, but to run work with structure:
 
-- What is the task?
-- What is the safest useful plan?
-- What changed?
-- What might have broken?
-- What should happen next?
+- clarify the brief
+- define the delivery path
+- make implementation decisions explicit
+- control risk and scope
+- keep the next action obvious
 
-This structure supports development work. It does not replace judgment, local expertise, or direct communication when a situation is unclear.
+This system supports judgment. It does not replace it.
 
 ## Agent Roles
 
-Each role has a distinct purpose:
-
-- `Planner` turns a request into a right-sized plan with clear success criteria.
-- `Builder` makes the change with minimal, understandable implementation work.
-- `Critic` reviews the reasoning, assumptions, and likely side effects.
-- `Regression` checks whether the change introduced breakage elsewhere.
-- `Report` summarizes the outcome in a concise, decision-useful format.
-- `Artifact Steward` keeps runs, reports, and state organized across iterations.
-
-Not every task needs every role. The system is meant to scale up or down based on task size and risk.
+- `Intake` converts a rough idea into a usable delivery brief.
+- `Planner` turns the brief into right-sized tasks and success criteria.
+- `Architect` defines the initial solution shape and identifies approval-sensitive decisions.
+- `Builder` executes the agreed slice with minimal, reviewable changes.
+- `Critic` tests the quality of the reasoning and flags overreach, weak assumptions, or side effects.
+- `Regression` checks relevant surrounding behavior after changes.
+- `Report` summarizes outcome, risk, and next steps.
+- `Artifact Steward` keeps tasks, runs, reports, and state consistent across iterations.
 
 ## How The Roles Work Together
 
-The common pattern is straightforward:
+Common sequence:
 
-- A request is captured in a task brief.
-- The Planner decides what needs to happen and what success looks like.
-- The Builder performs the work.
-- The Critic challenges weak reasoning and likely blind spots.
-- The Regression role checks for relevant breakage.
-- The Report role records what happened and what remains open.
-- The Artifact Steward keeps the supporting files and outputs orderly over time.
+`Intake -> Planner -> Architect -> Builder -> Critic -> Regression -> Report -> Artifact Steward`
 
-The value of this sequence is clarity. Each role has a narrow job, which makes it easier to spot missing thinking, incomplete implementation, or gaps in validation.
+Not every task needs every role at full depth. Small, isolated changes may compress the flow. Higher-risk work should use the full sequence.
 
-## Generic Behavior Vs Project Context
+## Project Context Vs Generic Behavior
 
-Keep the separation clean:
+Keep the split clean:
 
-- `AGENTS/*.md` should define reusable behavior that can apply to many projects.
-- `PROJECT/zz - PROJECT_CONTEXT.md` should contain project-specific facts such as goals, constraints, architecture, and quality expectations.
+- `AGENTS/*.md` defines reusable role behavior.
+- `PROJECT/PROJECT_BRIEF.md` captures the project in user terms.
+- `PROJECT/PROJECT_CONTEXT.md`, `PROJECT/ARCHITECTURE.md`, `PROJECT/DELIVERY_PLAN.md`, and `PROJECT/DECISIONS.md` capture project-specific working context.
+- `SYSTEM/*.md` defines the quality bar and approval logic for the operating model.
 
-If a rule is likely to change from one project to another, it belongs in project context, not in the generic agent definitions.
+If something changes from project to project, it should not be baked into the generic role files.
 
-## Operating Model
-
-Choose the lightest path that fits the task.
+## Operating Paths
 
 ### Fast Path
 
-Use this for small, low-risk changes with clear scope.
+Use this for small, low-risk changes with stable context.
 
-Flow:
-
-`Builder -> quick validation -> Report`
-
-Example uses:
-
-- minor bug fixes
-- small content or configuration updates
-- low-risk cleanup with obvious impact
+`Builder -> focused validation -> Report -> Artifact Steward`
 
 ### Full Path
 
-Use this for medium or larger tasks, unclear work, or changes with broader impact.
+Use this for new projects, medium or larger tasks, architecture work, or anything with unclear requirements.
 
-Flow:
-
-`Planner -> Builder -> Critic -> Regression -> Report`
-
-Example uses:
-
-- feature work
-- refactoring
-- multi-file bug fixes
-- changes that affect shared behavior or interfaces
-
-The `Artifact Steward` can support either path by keeping outputs and state consistent across runs.
+`Intake -> Planner -> Architect -> Builder -> Critic -> Regression -> Report -> Artifact Steward`
 
 ## Practical Guidance
 
-- Start with the smallest process that still protects quality.
-- Escalate to the full path when uncertainty, impact, or risk increases.
-- Keep role files generic and stable.
-- Put project-specific guidance in project context.
-- Keep reports short and useful.
-
-The template is successful when it helps people work faster with clearer reasoning, not when it creates extra ceremony.
+- Start from the brief, not from implementation guesses.
+- Keep tasks small enough to review and validate.
+- Escalate approval-sensitive changes instead of burying them in delivery work.
+- Keep state and next action current after each meaningful run.
+- Use the smallest process that still protects quality.
